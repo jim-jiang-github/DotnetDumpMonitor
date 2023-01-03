@@ -42,6 +42,10 @@ jobs:
           name: windows-ci-build
           path: ${{ env.build_path }}
 
+      - name: Install 7Zip PowerShell Module
+        shell: powershell
+        run: Install-Module 7Zip4PowerShell -Force -Verbose
+        
       - name: Zip the artifacts
         shell: powershell
         run: Compress-7Zip ${{ env.build_path }} -ArchiveFileName ${{ env.zip_name }} -Format Zip

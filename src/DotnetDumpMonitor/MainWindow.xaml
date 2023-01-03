@@ -44,10 +44,17 @@
             <DataGrid
                 Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}"
                 AutoGenerateColumns="False"
-                ItemsSource="{Binding DiffObjectDumpInfos}">
+                IsReadOnly="True"
+                ItemsSource="{Binding DiffObjectDumpInfos, Mode=OneWay}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Name}" Header="Name" />
-                    <DataGridTextColumn Binding="{Binding Count}" Header="Count" />
+                    <DataGridTextColumn
+                        Binding="{Binding Name}"
+                        Header="Name"
+                        IsReadOnly="True" />
+                    <DataGridTextColumn
+                        Binding="{Binding Count}"
+                        Header="Count"
+                        IsReadOnly="True" />
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

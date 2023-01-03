@@ -1,0 +1,19 @@
+﻿<Application
+    x:Class="DotnetDumpMonitor.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:DotnetDumpMonitor.Converters"
+    xmlns:local="clr-namespace:DotnetDumpMonitor"
+    StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <converters:BoolToVisibilityConverter
+            x:Key="trueToVisibileConverter"
+            FalseValue="Collapsed"
+            TrueValue="Visible" />
+        <converters:BoolToVisibilityConverter
+            x:Key="trueToCollapsedConverter"
+            FalseValue="Visible"
+            TrueValue="Collapsed" />
+        <converters:BoolInvertConverter x:Key="boolInvertConverter" />
+    </Application.Resources>
+</Application>

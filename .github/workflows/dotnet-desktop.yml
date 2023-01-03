@@ -36,4 +36,4 @@ jobs:
         uses: actions/upload-artifact@v2.3.1
         with:
           name: windows-ci-build
-          path: src/DotnetDumpMonitor/bin/Release/net6.0/win-x64/publish/*.exe
+          path: src/DotnetDumpMonitor/bin/Release/net6.0-windows/win-x64/publish/

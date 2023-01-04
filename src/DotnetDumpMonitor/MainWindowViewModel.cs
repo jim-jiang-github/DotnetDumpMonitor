@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -58,7 +59,7 @@ namespace DotnetDumpMonitor
         private async Task RefreshProcesses()
         {
             _lastObjectDumpInfos = null;
-            _baseObjectDumpInfos=null; 
+            _baseObjectDumpInfos = null;
             SelectProcess = null;
             DiffObjectDumpInfos.Clear();
             Processes.Clear();

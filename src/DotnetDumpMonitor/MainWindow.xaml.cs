@@ -1,7 +1,11 @@
 ﻿using CliWrap;
+using DotnetDumpMonitor.Commons;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,6 +30,18 @@ namespace DotnetDumpMonitor
         {
             InitializeComponent();
             DataContext = new MainWindowViewModel();
+            Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= MainWindow_Loaded;
+            var githubLastReleaseVersion = await GithubUpgradeHelper.GetLastReleaseVersion();
+            if (githubLastReleaseVersion > GithubUpgradeHelper.CurrentVersion)
+            {
+                MessageBox.Show($"Found new version({githubLastReleaseVersion})!!!");
+                GithubUpgradeHelper.GoToDownloadPage();
+            }
         }
     }
 }

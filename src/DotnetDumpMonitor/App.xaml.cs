@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +14,19 @@ namespace DotnetDumpMonitor
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            Log.Logger = new LoggerConfiguration()
+#if DEBUG
+                .MinimumLevel.Debug()
+#else
+                .MinimumLevel.Information()
+#endif
+                .WriteTo.File("logs\\log.log",
+                rollingInterval: RollingInterval.Day,
+                rollOnFileSizeLimit: true)
+                .CreateLogger();
+            Log.Logger.Information("app start!");
+        }
     }
 }

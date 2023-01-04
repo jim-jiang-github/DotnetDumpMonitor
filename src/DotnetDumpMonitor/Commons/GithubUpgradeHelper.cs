@@ -58,7 +58,7 @@ namespace DotnetDumpMonitor.Commons
         {
             Process.Start(new ProcessStartInfo
             {
-                FileName = "LAST_RELEASE_URL",
+                FileName = LAST_RELEASE_URL,
                 UseShellExecute = true
             });
         }

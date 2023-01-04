@@ -5,11 +5,12 @@
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:DotnetDumpMonitor"
+    xmlns:vm="clr-namespace:DotnetDumpMonitor.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="Dump monitor"
+    Title="{Binding Title}"
     Width="800"
     Height="450"
-    d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
+    d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
     mc:Ignorable="d">
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">

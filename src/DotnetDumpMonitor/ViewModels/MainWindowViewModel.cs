@@ -1,6 +1,7 @@
 ﻿using CliWrap;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DotnetDumpMonitor.Commons;
 using DotnetDumpMonitor.Models;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,13 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Data;
 using System.Windows.Interop;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace DotnetDumpMonitor
+namespace DotnetDumpMonitor.ViewModels
 {
     public partial class MainWindowViewModel : ObservableObject
     {
@@ -36,6 +38,9 @@ namespace DotnetDumpMonitor
 
         [ObservableProperty]
         private ObservableCollection<ObjectDumpInfo> _diffObjectDumpInfos = new();
+
+        [ObservableProperty]
+        private string _title = $"Dump monitor v{GithubUpgradeHelper.CurrentVersion}";
 
         public MainWindowViewModel()
         {

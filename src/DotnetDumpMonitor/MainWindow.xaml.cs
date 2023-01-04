@@ -1,5 +1,6 @@
 ﻿using CliWrap;
 using DotnetDumpMonitor.Commons;
+using DotnetDumpMonitor.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,12 +37,14 @@ namespace DotnetDumpMonitor
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             Loaded -= MainWindow_Loaded;
+#if !DEBUG
             var githubLastReleaseVersion = await GithubUpgradeHelper.GetLastReleaseVersion();
             if (githubLastReleaseVersion > GithubUpgradeHelper.CurrentVersion)
             {
                 MessageBox.Show($"Found new version({githubLastReleaseVersion})!!!");
                 GithubUpgradeHelper.GoToDownloadPage();
             }
+#endif
         }
     }
 }

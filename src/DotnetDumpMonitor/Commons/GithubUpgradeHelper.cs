@@ -38,7 +38,7 @@ namespace DotnetDumpMonitor.Commons
                 {
                     return null;
                 }
-                var match = Regex.Match(requestUri.OriginalString, ".*?\\/v(\\d.\\d.\\d)");
+                var match = Regex.Match(requestUri.OriginalString, "v(\\d+\\.?\\d+\\.?\\d+\\.?)");
                 if (match.Success && match.Groups.Count == 2 && match.Groups[1].Value is string versionString && Version.TryParse(versionString, out Version? version))
                 {
                     return version;

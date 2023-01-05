@@ -47,7 +47,7 @@ namespace DotnetDumpMonitor.ViewModels
             BindingOperations.EnableCollectionSynchronization(Processes, this);
             DispatcherTimer dispatcherTimer = new DispatcherTimer()
             {
-                Interval = TimeSpan.FromSeconds(1)
+                Interval = TimeSpan.FromSeconds(3)
             };
             dispatcherTimer.Tick += async (s, e) =>
             {

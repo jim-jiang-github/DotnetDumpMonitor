@@ -38,7 +38,7 @@ jobs:
       - name: Remove File
         uses: JesseTG/rm@v1.0.3
         with:
-        path: ${{ env.build_path }}
+          path: ${{ env.build_path }}
 
       - name: Extract version from tag
         uses: damienaicheh/extract-version-from-tag-action@v1.0.0

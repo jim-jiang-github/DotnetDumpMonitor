@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DotnetDumpMonitor.Commons;
 using DotnetDumpMonitor.Models;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -92,6 +93,7 @@ namespace DotnetDumpMonitor.ViewModels
                 return;
             }
             await RefreshObjectDumpInfos(SelectProcess);
+            Log.Logger.Information("SetCurrentAsBase");
         }
 
         public async Task RefreshObjectDumpInfos(ProcessDumpInfo processDumpInfo)

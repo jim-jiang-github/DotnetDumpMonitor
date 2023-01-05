@@ -27,6 +27,19 @@ namespace DotnetDumpMonitor
                 rollOnFileSizeLimit: true)
                 .CreateLogger();
             Log.Logger.Information("app start!");
+
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+        }
+
+        private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+        {
+            Log.Logger.Fatal(e.Exception.ToString());
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Logger.Fatal("CurrentDomain_UnhandledException IsTerminating:{IsTerminating} ExceptionObject{ExceptionObject}", e.IsTerminating, e.ExceptionObject);
         }
     }
 }

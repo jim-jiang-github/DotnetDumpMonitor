@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Serilog;
+using Serilog.Core;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -48,19 +50,27 @@ namespace DotnetDumpMonitor.Commons
                     return null;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Logger.Error("GetLastReleaseVersion error{}", ex.ToString());
                 return null;
             }
         }
 
         public static void GoToDownloadPage()
         {
-            Process.Start(new ProcessStartInfo
+            try
             {
-                FileName = LAST_RELEASE_URL,
-                UseShellExecute = true
-            });
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = LAST_RELEASE_URL,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error("GoToDownloadPage error{}", ex.ToString());
+            }
         }
     }
 }

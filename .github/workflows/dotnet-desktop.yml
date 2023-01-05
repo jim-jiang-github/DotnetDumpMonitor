@@ -42,7 +42,7 @@ jobs:
         run: dotnet restore src/DotnetDumpMonitor/DotnetDumpMonitor.csproj
 
       - name: Build App without framework
-        run: dotnet publish src/DotnetDumpMonitor/DotnetDumpMonitor.csproj -c Release -r win-x64 /p:PublishSingleFile=true /p:Version='${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
+        run: dotnet publish src/DotnetDumpMonitor/DotnetDumpMonitor.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true /p:Version='${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v2.3.1
@@ -54,18 +54,18 @@ jobs:
         shell: powershell
         run: Compress-7Zip ${{ env.build_path }} -ArchiveFileName ${{ env.zip_name_without_framework }} -Format Zip
 
-      - name: Build App with framework
-        run: dotnet publish src/DotnetDumpMonitor/DotnetDumpMonitor.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:Version='${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
+      # - name: Build App with framework
+      #   run: dotnet publish src/DotnetDumpMonitor/DotnetDumpMonitor.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:Version='${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
       
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          name: windows-ci-build
-          path: ${{ env.build_path }}
+      # - name: Upload Artifact
+      #   uses: actions/upload-artifact@v2.3.1
+      #   with:
+      #     name: windows-ci-build
+      #     path: ${{ env.build_path }}
         
-      - name: Zip the artifacts
-        shell: powershell
-        run: Compress-7Zip ${{ env.build_path }} -ArchiveFileName ${{ env.zip_name_with_framework }} -Format Zip
+      # - name: Zip the artifacts
+      #   shell: powershell
+      #   run: Compress-7Zip ${{ env.build_path }} -ArchiveFileName ${{ env.zip_name_with_framework }} -Format Zip
 
       - name: Create Release
         id: create_release
@@ -91,15 +91,15 @@ jobs:
           asset_name: ${{ env.zip_name_without_framework }}
           asset_content_type: application/zip    
           
-      - name: Upload Release Asset dotnet-dump-monitor-with-framework
-        id: upload-release-asset-dotnet-dump-monitor-with-framework
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./${{ env.zip_name_with_framework }}
-          asset_name: ${{ env.zip_name_with_framework }}
-          asset_content_type: application/zip   
+      # - name: Upload Release Asset dotnet-dump-monitor-with-framework
+      #   id: upload-release-asset-dotnet-dump-monitor-with-framework
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+      #     asset_path: ./${{ env.zip_name_with_framework }}
+      #     asset_name: ${{ env.zip_name_with_framework }}
+      #     asset_content_type: application/zip   
 
 

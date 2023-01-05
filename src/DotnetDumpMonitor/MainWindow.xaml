@@ -8,8 +8,9 @@
     xmlns:vm="clr-namespace:DotnetDumpMonitor.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="{Binding Title}"
-    Width="800"
-    Height="450"
+    WindowStartupLocation="CenterScreen"
+    Width="1600"
+    Height="800"
     d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
     mc:Ignorable="d">
     <b:Interaction.Triggers>
@@ -43,11 +44,16 @@
                     SelectedValue="{Binding SelectProcess}" />
             </DockPanel>
             <DataGrid
+                EnableRowVirtualization="True"
                 Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}"
                 AutoGenerateColumns="False"
                 IsReadOnly="True"
                 ItemsSource="{Binding DiffObjectDumpInfos, Mode=OneWay}">
                 <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Binding="{Binding Lib}"
+                        Header="Lib"
+                        IsReadOnly="True" />
                     <DataGridTextColumn
                         Binding="{Binding Name}"
                         Header="Name"

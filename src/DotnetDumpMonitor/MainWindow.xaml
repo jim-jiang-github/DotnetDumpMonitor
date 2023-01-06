@@ -5,20 +5,20 @@
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:DotnetDumpMonitor"
-    xmlns:vm="clr-namespace:DotnetDumpMonitor.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:DotnetDumpMonitor.ViewModels"
     Title="{Binding Title}"
-    WindowStartupLocation="CenterScreen"
     Width="1600"
     Height="800"
     d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <b:Interaction.Triggers>
         <b:EventTrigger EventName="Loaded">
-            <b:InvokeCommandAction Command="{Binding RefreshProcessesCommand}" />
+            <b:InvokeCommandAction Command="{Binding InitWindowCommand}" />
         </b:EventTrigger>
     </b:Interaction.Triggers>
-    <Grid>
+    <Grid IsEnabled="{Binding Loaded}">
         <StackPanel
             Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualWidth}"
             HorizontalAlignment="Left"
@@ -44,9 +44,9 @@
                     SelectedValue="{Binding SelectProcess}" />
             </DockPanel>
             <DataGrid
-                EnableRowVirtualization="True"
                 Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}"
                 AutoGenerateColumns="False"
+                EnableRowVirtualization="True"
                 IsReadOnly="True"
                 ItemsSource="{Binding DiffObjectDumpInfos, Mode=OneWay}">
                 <DataGrid.Columns>

@@ -28,7 +28,7 @@ namespace DotnetDumpMonitor.ViewModels
     {
         private IEnumerable<ObjectDumpInfo>? _lastObjectDumpInfos = null;
         private IEnumerable<ObjectDumpInfo>? _baseObjectDumpInfos = null;
-        private string _gcDumpVersionStr = string.Empty;
+        private string? _gcDumpVersionStr = null;
 
         [ObservableProperty]
         private bool _loaded = false;
@@ -70,7 +70,7 @@ namespace DotnetDumpMonitor.ViewModels
 
         public void RefreshTitle()
         {
-            var gcDumpVersionStr = _gcDumpVersionStr == string.Empty ? "version loading..." : $"v{_gcDumpVersionStr}";
+            var gcDumpVersionStr = _gcDumpVersionStr == null ? "version loading..." : $"v{_gcDumpVersionStr}";
             var version = (GithubLastReleaseVersion == null || GithubUpgradeHelper.CurrentVersion == GithubLastReleaseVersion) 
                 ? $"v{GithubUpgradeHelper.CurrentVersion}" : $"v{GithubUpgradeHelper.CurrentVersion}(lastest v{GithubLastReleaseVersion})";
             Title = $"Dump monitor {version} / Dotnet gc dump {gcDumpVersionStr}";
@@ -78,8 +78,8 @@ namespace DotnetDumpMonitor.ViewModels
         [RelayCommand]
         private async Task InitWindow()
         {
-            var _gcDumpVersionStr = await DotnetGcDumpHelper.GetGcDumpVersionStr();
-            if (_gcDumpVersionStr == null)
+            var gcDumpVersionStr = await DotnetGcDumpHelper.GetGcDumpVersionStr();
+            if (gcDumpVersionStr == null)
             {
                 if (MessageBox.Show("You haven't installed 'dotnet gc dump' yet, do you want to install it now?", "Warning!!!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
@@ -95,8 +95,9 @@ namespace DotnetDumpMonitor.ViewModels
                     App.Current.Shutdown();
                     return;
                 }
-                _gcDumpVersionStr = await DotnetGcDumpHelper.GetGcDumpVersionStr();
+                gcDumpVersionStr = await DotnetGcDumpHelper.GetGcDumpVersionStr();
             }
+            _gcDumpVersionStr = gcDumpVersionStr;
             RefreshTitle();
             Loaded = true;
             await RefreshProcesses();

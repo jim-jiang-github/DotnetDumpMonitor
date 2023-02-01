@@ -94,10 +94,8 @@ namespace DotnetDumpMonitor.ViewModels
         [RelayCommand]
         private async Task RefreshProcesses()
         {
-            _lastObjectDumpInfos = null;
-            _baseObjectDumpInfos = null;
+            Clean();
             SelectProcess = null;
-            DiffObjectDumpInfos.Clear();
             Processes.Clear();
             var cmd = await Cli.Wrap("dotnet-gcdump")
                 .WithArguments(args => args
@@ -126,6 +124,18 @@ namespace DotnetDumpMonitor.ViewModels
             Log.Logger.Information("SetCurrentAsBase");
         }
 
+        [RelayCommand]
+        private async Task ResetBase()
+        {
+            _baseObjectDumpInfos = null;
+            if (SelectProcess == null)
+            {
+                return;
+            }
+            await RefreshObjectDumpInfos(SelectProcess);
+            Log.Logger.Information("SetCurrentAsBase");
+        }
+
         public async Task RefreshObjectDumpInfos(ProcessDumpInfo processDumpInfo)
         {
             List<string> lines = new();
@@ -141,7 +151,6 @@ namespace DotnetDumpMonitor.ViewModels
                  }))
                  .WithValidation(CommandResultValidation.None)
                  .ExecuteAsync();
-
             var objectDumpInfos = lines
                 //"      3,882,796  GC Heap bytes"
                 //"         48,015  GC Heap objects"
@@ -164,43 +173,33 @@ namespace DotnetDumpMonitor.ViewModels
                     return null;
                 })
                 .Where(x => x != null)
-                .Cast<ObjectDumpInfo>()
-                .Where(a => a.Lib.Contains("RoomsHost"));
+                .Cast<ObjectDumpInfo>();
+            //.Where(a => a.Lib.Contains("RoomsHost"));
 
 
             _lastObjectDumpInfos = objectDumpInfos;
 
-            if (_baseObjectDumpInfos == null)
+            var diffObjectDumpInfos = await Task.Run(() =>
             {
-                _baseObjectDumpInfos = objectDumpInfos;
-            }
-            else
-            {
-                var diffObjectDumpInfos = await Task.Run(() =>
+                List<ObjectDumpInfo> insideDiffObjectDumpInfos = new();
+                foreach (var objectDumpInfo in objectDumpInfos)
                 {
-                    List<ObjectDumpInfo> insideDiffObjectDumpInfos = new();
-                    foreach (var objectDumpInfo in objectDumpInfos)
+                    var lastObjectDumpInfo = _baseObjectDumpInfos?.FirstOrDefault(x => x.Lib == objectDumpInfo.Lib && x.Name == objectDumpInfo.Name);
+                    if (lastObjectDumpInfo == null || lastObjectDumpInfo.Count < objectDumpInfo.Count)
                     {
-                        var lastObjectDumpInfo = _baseObjectDumpInfos?.FirstOrDefault(x => x.Lib == objectDumpInfo.Lib && x.Name == objectDumpInfo.Name);
-                        if (lastObjectDumpInfo == null || lastObjectDumpInfo.Count < objectDumpInfo.Count)
-                        {
-                            if (objectDumpInfo.Count >= 1)
-                            {
-                                insideDiffObjectDumpInfos.Add(objectDumpInfo);
-                            }
-                        }
+                        insideDiffObjectDumpInfos.Add(objectDumpInfo);
                     }
-                    return insideDiffObjectDumpInfos;
-                });
-                DiffObjectDumpInfos.Clear();
-                if (!ProcessesLoaded)
-                {
-                    return;
                 }
-                foreach (var objectDumpInfo in diffObjectDumpInfos)
-                {
-                    DiffObjectDumpInfos.Add(objectDumpInfo);
-                }
+                return insideDiffObjectDumpInfos;
+            });
+            DiffObjectDumpInfos.Clear();
+            if (!ProcessesLoaded || processDumpInfo != SelectProcess)
+            {
+                return;
+            }
+            foreach (var objectDumpInfo in diffObjectDumpInfos)
+            {
+                DiffObjectDumpInfos.Add(objectDumpInfo);
             }
         }
 
@@ -211,7 +210,15 @@ namespace DotnetDumpMonitor.ViewModels
             {
                 return;
             }
+            Clean();
             await RefreshObjectDumpInfos(value);
+        }
+
+        private void Clean()
+        {
+            _lastObjectDumpInfos = null;
+            _baseObjectDumpInfos = null;
+            DiffObjectDumpInfos.Clear();
         }
     }
 }

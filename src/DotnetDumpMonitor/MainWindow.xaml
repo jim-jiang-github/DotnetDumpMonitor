@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
     xmlns:local="clr-namespace:DotnetDumpMonitor"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:DotnetDumpMonitor.ViewModels"
@@ -27,6 +28,13 @@
                 <Button
                     Height="25"
                     Margin="10,0,10,0"
+                    Command="{Binding ResetBaseCommand}"
+                    Content="Reset base"
+                    DockPanel.Dock="Right"
+                    IsEnabled="{Binding ProcessesLoaded}" />
+                <Button
+                    Height="25"
+                    Margin="10,0,0,0"
                     Command="{Binding SetCurrentAsBaseCommand}"
                     Content="Set current as base"
                     DockPanel.Dock="Right"
@@ -45,6 +53,7 @@
             </DockPanel>
             <DataGrid
                 Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}"
+                dgx:DataGridFilter.IsAutoFilterEnabled="True"
                 AutoGenerateColumns="False"
                 EnableRowVirtualization="True"
                 IsReadOnly="True"

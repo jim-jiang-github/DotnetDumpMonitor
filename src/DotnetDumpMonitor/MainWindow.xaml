@@ -27,6 +27,13 @@
                 <Button
                     Height="25"
                     Margin="10,0,10,0"
+                    Click="SetTopButton_Click"
+                    Content="Set top"
+                    DockPanel.Dock="Right"
+                    IsEnabled="{Binding ProcessesLoaded}" />
+                <Button
+                    Height="25"
+                    Margin="10,0,0,0"
                     Command="{Binding SetCurrentAsBaseCommand}"
                     Content="Set current as base"
                     DockPanel.Dock="Right"

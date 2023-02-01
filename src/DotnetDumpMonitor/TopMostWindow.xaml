@@ -1,0 +1,61 @@
+﻿<Window
+    x:Class="DotnetDumpMonitor.TopMostWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DotnetDumpMonitor"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    AllowsTransparency="True"
+    Background="Transparent"
+    IsHitTestVisible="False"
+    ResizeMode="NoResize"
+    ShowInTaskbar="False"
+    Topmost="True"
+    WindowState="Maximized"
+    WindowStyle="None"
+    mc:Ignorable="d">
+    <DataGrid
+        Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}"
+        Margin="20"
+        AlternatingRowBackground="Transparent"
+        AutoGenerateColumns="False"
+        Background="#80000000"
+        BorderThickness="0"
+        EnableRowVirtualization="True"
+        Foreground="White"
+        HorizontalGridLinesBrush="Transparent"
+        HorizontalScrollBarVisibility="Disabled"
+        IsHitTestVisible="False"
+        IsReadOnly="True"
+        ItemsSource="{Binding DiffObjectDumpInfos, Mode=OneWay}"
+        Opacity=".3"
+        RowBackground="Transparent"
+        VerticalGridLinesBrush="Transparent"
+        VerticalScrollBarVisibility="Disabled">
+        <DataGrid.Columns>
+            <DataGridTextColumn
+                Binding="{Binding Lib}"
+                Header="Lib"
+                IsReadOnly="True" />
+            <DataGridTextColumn
+                Binding="{Binding Name}"
+                Header="Name"
+                IsReadOnly="True" />
+            <DataGridTextColumn
+                Binding="{Binding Count}"
+                Header="Count"
+                IsReadOnly="True" />
+        </DataGrid.Columns>
+        <DataGrid.ColumnHeaderStyle>
+            <Style TargetType="{x:Type DataGridColumnHeader}">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+        </DataGrid.ColumnHeaderStyle>
+        <DataGrid.RowHeaderStyle>
+            <Style TargetType="{x:Type DataGridRowHeader}">
+                <Setter Property="Background" Value="Transparent" />
+            </Style>
+        </DataGrid.RowHeaderStyle>
+    </DataGrid>
+</Window>

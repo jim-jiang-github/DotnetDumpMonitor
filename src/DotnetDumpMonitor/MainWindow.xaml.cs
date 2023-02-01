@@ -37,8 +37,10 @@ namespace DotnetDumpMonitor
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             Loaded -= MainWindow_Loaded;
-#if !DEBUG
             var githubLastReleaseVersion = await GithubUpgradeHelper.GetLastReleaseVersion();
+            ViewModel.GithubLastReleaseVersion = githubLastReleaseVersion;
+            ViewModel.RefreshTitle();
+#if !DEBUG
             if (githubLastReleaseVersion > GithubUpgradeHelper.CurrentVersion)
             {
                 MessageBox.Show($"Found new version({githubLastReleaseVersion})!!!");

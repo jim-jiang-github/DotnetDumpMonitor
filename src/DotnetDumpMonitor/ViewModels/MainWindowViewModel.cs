@@ -28,6 +28,7 @@ namespace DotnetDumpMonitor.ViewModels
     {
         private IEnumerable<ObjectDumpInfo>? _lastObjectDumpInfos = null;
         private IEnumerable<ObjectDumpInfo>? _baseObjectDumpInfos = null;
+        private string _gcDumpVersionStr = string.Empty;
 
         [ObservableProperty]
         private bool _loaded = false;
@@ -46,10 +47,11 @@ namespace DotnetDumpMonitor.ViewModels
 
         [ObservableProperty]
         private string _title;
+        public Version? GithubLastReleaseVersion { get; set; }
 
         public MainWindowViewModel()
         {
-            _title = $"Dump monitor v{GithubUpgradeHelper.CurrentVersion} / Dotnet gc dump version loading...";
+            RefreshTitle();
             BindingOperations.EnableCollectionSynchronization(Processes, this);
             DispatcherTimer dispatcherTimer = new DispatcherTimer()
             {
@@ -65,11 +67,19 @@ namespace DotnetDumpMonitor.ViewModels
             };
             dispatcherTimer.Start();
         }
+
+        public void RefreshTitle()
+        {
+            var gcDumpVersionStr = _gcDumpVersionStr == string.Empty ? "version loading..." : $"v{_gcDumpVersionStr}";
+            var version = (GithubLastReleaseVersion == null || GithubUpgradeHelper.CurrentVersion == GithubLastReleaseVersion) 
+                ? $"v{GithubUpgradeHelper.CurrentVersion}" : $"v{GithubUpgradeHelper.CurrentVersion}(lastest v{GithubLastReleaseVersion})";
+            Title = $"Dump monitor {version} / Dotnet gc dump {gcDumpVersionStr}";
+        }
         [RelayCommand]
         private async Task InitWindow()
         {
-            var gcDumpVersionStr = await DotnetGcDumpHelper.GetGcDumpVersionStr();
-            if (gcDumpVersionStr == null)
+            var _gcDumpVersionStr = await DotnetGcDumpHelper.GetGcDumpVersionStr();
+            if (_gcDumpVersionStr == null)
             {
                 if (MessageBox.Show("You haven't installed 'dotnet gc dump' yet, do you want to install it now?", "Warning!!!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
@@ -85,9 +95,9 @@ namespace DotnetDumpMonitor.ViewModels
                     App.Current.Shutdown();
                     return;
                 }
-                gcDumpVersionStr = await DotnetGcDumpHelper.GetGcDumpVersionStr();
+                _gcDumpVersionStr = await DotnetGcDumpHelper.GetGcDumpVersionStr();
             }
-            Title = $"Dump monitor v{GithubUpgradeHelper.CurrentVersion} / Dotnet gc dump v{gcDumpVersionStr}";
+            RefreshTitle();
             Loaded = true;
             await RefreshProcesses();
         }

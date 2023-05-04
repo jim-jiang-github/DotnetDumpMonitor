@@ -1,0 +1,110 @@
+name: Build Windows
+# https://github.com/actions/virtual-environments
+
+on:
+  push:
+    tags:
+      - 'v\d+\.?\d+\.?\d+\.?'
+
+  workflow_dispatch:
+
+env:
+    DOTNETVERSION: 6.0.x
+
+jobs:
+  build-mac:
+    runs-on: windows-latest
+    env:
+      build_path: src\DotnetDumpMonitor\bin\Release\net6.0-windows\win-x64\publish
+      zip_name_without_framework: dotnet-dump-monitor-without-framework.zip
+      zip_name_with_framework: dotnet-dump-monitor-with-framework.zip
+    name: Windows Build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{env.DOTNETVERSION}}
+          include-prerelease: true
+
+      - name: Install 7Zip PowerShell Module
+        shell: powershell
+        run: Install-Module 7Zip4PowerShell -Force -Verbose
+
+      - name: Remove File
+        uses: JesseTG/rm@v1.0.3
+        with:
+          path: ${{ env.build_path }}
+
+      - name: Extract version from tag
+        uses: damienaicheh/extract-version-from-tag-action@v1.0.0
+
+      - name: Restore Dependencies
+        run: dotnet restore src/DotnetDumpMonitor/DotnetDumpMonitor.csproj
+
+      - name: Build App without framework
+        run: dotnet publish src/DotnetDumpMonitor/DotnetDumpMonitor.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true /p:Version='${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: windows-ci-build
+          path: ${{ env.build_path }}
+        
+      - name: Zip the artifacts
+        shell: powershell
+        run: Compress-7Zip ${{ env.build_path }} -ArchiveFileName ${{ env.zip_name_without_framework }} -Format Zip
+
+      - name: Build App with framework
+        run: dotnet publish src/DotnetDumpMonitor/DotnetDumpMonitor.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:Version='${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2.3.1
+        with:
+          name: windows-ci-build
+          path: ${{ env.build_path }}
+        
+      - name: Zip the artifacts
+        shell: powershell
+        run: Compress-7Zip ${{ env.build_path }} -ArchiveFileName ${{ env.zip_name_with_framework }} -Format Zip
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Automated Release by GitHub Action CI
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset dotnet-dump-monitor-without-framework
+        id: upload-release-asset-dotnet-dump-monitor-without-framework
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./${{ env.zip_name_without_framework }}
+          asset_name: ${{ env.zip_name_without_framework }}
+          asset_content_type: application/zip    
+          
+      - name: Upload Release Asset dotnet-dump-monitor-with-framework
+        id: upload-release-asset-dotnet-dump-monitor-with-framework
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./${{ env.zip_name_with_framework }}
+          asset_name: ${{ env.zip_name_with_framework }}
+          asset_content_type: application/zip   
+
+

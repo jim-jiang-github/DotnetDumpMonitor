@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    tags:
+      - 'v\d+\.?\d+\.?\d+\.?'
+
+  workflow_dispatch:
+
+env:
+    DOTNETVERSION: 7.0.x
+
+jobs:
+  build:
+
+    # windows-latest is required due to some resource stuff.
+    runs-on: windows-latest
+
+    steps:
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v1.9.0
+        with:
+          dotnet-version: ${{env.DOTNETVERSION}}
+          
+      - name: Extract version from tag
+        uses: damienaicheh/extract-version-from-tag-action@v1.0.0
+
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: dotnet restore src/LogVisualizer.sln
+
+      - name: Build win-x64
+        run: dotnet publish src/LogVisualizer/LogVisualizer.csproj -r win-x64 -p:Configuration=Release -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:IncludeNativeLibrariesForSelfExtract=true --self-contained true -property:Version='${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
+
+      - name: Zip win-x64 build
+        uses: vimtor/action-zip@v1
+        with:
+          files: src/LogVisualizer/bin/Release/net7.0/win-x64/publish/
+          dest: LogVisualizer-windows-x64.zip
+
+      - name: Collect win-x64 artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: LogVisualizer-windows-x64
+          path: ${{ github.workspace }}/LogVisualizer-windows-x64.zip
+
+      - name: Build osx-x64
+        run: dotnet publish src/LogVisualizer/LogVisualizer.csproj -r osx.12-x64 -p:Configuration=Release -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true --self-contained true -property:Version='${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
+
+      - name: Zip osx-x64 build
+        uses: vimtor/action-zip@v1
+        with:
+          files: src/LogVisualizer/bin/Release/osx.12-x64/publish/
+          dest: LogVisualizer-macOS-x64.zip
+
+      - name: Collect osx-x64 artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: LogVisualizer-macOS-x64
+          path: ${{ github.workspace }}/LogVisualizer-macOS-x64.zip
+
+      - name: Build osx-arm64
+        run: dotnet publish src/LogVisualizer/LogVisualizer.csproj -r osx.12-arm64 -p:Configuration=Release -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true --self-contained true -property:Version='${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
+
+      - name: Zip osx-arm64 build
+        uses: vimtor/action-zip@v1
+        with:
+          files: src/LogVisualizer/bin/Release/osx.12-arm64/publish/
+          dest: LogVisualizer-macOS-arm64.zip
+
+      - name: Collect osx-arm64 artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: LogVisualizer-macOS-arm64
+          path: ${{ github.workspace }}/LogVisualizer-macOS-arm64.zip
+
+      # Release Management
+      - name: Delete release drafts
+        uses: hugo19941994/delete-draft-releases@v1.0.0
+        with:
+          threshold: 1s
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        #if: startsWith(github.ref, 'refs/tags/')
+        with:
+          draft: true
+          tag_name: v'${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
+          generate_release_notes: true
+          files: |
+            ${{ github.workspace }}/LogVisualizer-windows-x64.zip
+            ${{ github.workspace }}/LogVisualizer-macOS-x64.zip
+            ${{ github.workspace }}/LogVisualizer-macOS-arm64.zip

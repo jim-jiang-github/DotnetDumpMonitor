@@ -78,7 +78,7 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: false
           draft: false
-          title: '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
+          title: Release ${{ github.ref }}
           files: |
             ./${{ env.zip_name_without_framework }}
             ./${{ env.zip_name_with_framework }}

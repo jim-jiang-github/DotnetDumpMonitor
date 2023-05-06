@@ -25,6 +25,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Extract version from tag
+        uses: damienaicheh/extract-version-from-tag-action@v1.1.0
+
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v1
         with:
@@ -39,9 +42,6 @@ jobs:
         uses: JesseTG/rm@v1.0.3
         with:
           path: ${{ env.build_path }}
-
-      - name: Extract version from tag
-        uses: damienaicheh/extract-version-from-tag-action@v1.0.0
 
       - name: Restore Dependencies
         run: dotnet restore src/DotnetDumpMonitor/DotnetDumpMonitor.csproj

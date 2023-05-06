@@ -76,8 +76,9 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
+          prerelease: false
+          draft: false
+          title: '${{ env.MAJOR }}.${{ env.MINOR }}.${{ env.PATCH }}.${{ env.NUMBER_OF_COMMITS }}'
           files: |
             ./${{ env.zip_name_without_framework }}
             ./${{ env.zip_name_with_framework }}

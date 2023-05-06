@@ -5,12 +5,9 @@ on:
   push:
     tags:
       - 'v\d+\.?\d+\.?\d+\.?'
-
   workflow_dispatch:
-
 env:
     DOTNETVERSION: 6.0.x
-
 jobs:
   build-mac:
     runs-on: windows-latest

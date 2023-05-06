@@ -75,8 +75,7 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: false
           draft: false
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          title: Release ${{ github.ref.replace('refs/tags/', '') }}
           files: |
             ./${{ env.zip_name_without_framework }}
             ./${{ env.zip_name_with_framework }}

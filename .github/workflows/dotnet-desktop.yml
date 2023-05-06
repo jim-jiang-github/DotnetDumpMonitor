@@ -85,26 +85,12 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset dotnet-dump-monitor-without-framework
-        id: upload-release-asset-dotnet-dump-monitor-without-framework
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./${{ env.zip_name_without_framework }}
-          asset_name: ${{ env.zip_name_without_framework }}
-          asset_content_type: application/zip    
-          
-      - name: Upload Release Asset dotnet-dump-monitor-with-framework
-        id: upload-release-asset-dotnet-dump-monitor-with-framework
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./${{ env.zip_name_with_framework }}
-          asset_name: ${{ env.zip_name_with_framework }}
-          asset_content_type: application/zip   
-
-
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            ./${{ env.zip_name_without_framework }}
+            ./${{ env.zip_name_with_framework }}
